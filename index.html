@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#0f0f0f"/>
+		<meta http-equiv="Content-Security-Policy"
+			content="default-src 'none'; manifest-src 'self'; connect-src 'self' ws: wss:; script-src 'self'; script-src-elem 'self'; script-src-attr 'unsafe-inline'; style-src 'self' fonts.googleapis.com; img-src http: https: data:; media-src *; font-src 'self' fonts.gstatic.com; child-src 'none';" />
+		<title>Yo, Sup</title>
+		<link rel="manifest" href="pwa/manifest.json"/>
+		<link rel="icon" href="icon/icon.svg" type="image/svg+xml"/>
+		<link rel="apple-touch-icon" href="pwa/icon-256.png"/>
+		<link rel="stylesheet" href="css/vars.css?v=1">
+		<link rel="stylesheet" href="css/utils.css?v=1">
+		<link rel="stylesheet" href="css/styles.css?v=13">
+		<link rel="stylesheet" href="css/responsive.css?v=10">
+		<script defer src="js/ui/safe-html.js?v=1"></script>
+		<script defer src="js/util.js?v=5"></script>
+		<script defer src="js/ui/util.js?v=8"></script>
+		<script defer src="js/ui/render.js?v=15"></script>
+		<script defer src="js/ui/state.js?v=1"></script>
+		<script defer src="js/ui/fmt.js?v=1"></script>
+		<script defer src="js/ui/profile.js?v=1"></script>
+		<script defer src="js/ui/settings.js?v=1"></script>
+		<script defer src="js/ui/dm.js?v=1"></script>
+		<script defer src="js/noble-secp256k1.js?v=1"></script>
+		<script defer src="js/bech32.js?v=1"></script>
+		<script defer src="js/nostr.js?v=7"></script>
+		<script defer src="js/core.js?v=1"></script>
+		<script defer src="js/model.js?v=1"></script>
+		<script defer src="js/contacts.js?v=1"></script>
+		<script defer src="js/event.js?v=1"></script>
+		<script defer src="js/lib.js?v=1"></script>
+		<script defer src="js/main.js?v=1"></script>
+	</head>
+	<body>
+		<div id="container-busy">
+			<div class="loader" title="Loading...">
+				<img class="dark-invert" src="icon/loader-fragment.svg"/>
+			</div>
+		</div>
+		<div id="container-welcome" class="hide">
+			<div class="hero-box">
+				<div class="padded">
+					<h1>
+						Yo, Sup? 
+						<img class="icon svg" src="icon/logo-inverted.svg"/>
+					</h1>
+					<p>The blue bird experience for Nostr.</p>
+					<button class="action" onclick="signin()">
+						Sign In with Key
+						<img src="./icon/key.svg" class="icon svg small invert"/>
+					</button>
+					<br/>
+					<br/>
+					<button class="btn-text" onclick="open_faqs()">
+						What's Nostr? 
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="container-app" class="hide">
+		<nav id="gnav" class="">
+			<button class="icon" role="open-gnav" title="Open Menu" onclick="toggle_gnav(this)">
+				<img class="icon svg invert" src="icon/logo.svg"/>
+			</button>
+			<button class="icon" role="home" title="Home" onclick="switch_view('friends')">
+				<img class="icon svg invert" src="icon/home.svg"/>
+			</button>
+			<button class="icon" role="explore" title="Explore" onclick="switch_view('explore')">
+				<img class="icon svg invert" src="icon/explore.svg"/>
+			</button>
+			<button class="icon" role="dm" title="Direct Messages" onclick="switch_view('dm')">
+				<img class="icon svg invert" src="icon/messages.svg"/>
+				<div class="new-notifications hide" role="dm"></div>
+			</button>
+			<button class="icon" role="notifications" title="Notifications" onclick="switch_view('notifications')">
+				<img class="icon svg invert" src="icon/notifications.svg"/>
+				<div class="new-notifications hide" role="activity"></div>
+			</button>
+			<button class="icon" role="settings" title="Settings" onclick="switch_view('settings')">
+				<img class="icon svg invert" src="icon/settings.svg"/>
+			</button>
+		</nav>
+		<div id="container">
+			<div class="flex-fill vertical-hide"></div>
+			<div id="nav" class="flex-noshrink vertical-hide">
+				<div data-active="home">
+					<div id="app-icon-logo">
+						<img class="icon svg" title="Damus" src="icon/logo-inverted.svg"/>
+					</div>
+					<button role="home" class="nav icon" 
+						title="Home" onclick="switch_view('friends')">
+						<img class="icon svg inactive" src="icon/home.svg"/>
+						<img class="icon svg active" src="icon/home-active.svg"/>
+					</button>
+					<button role="explore" class="nav icon" 
+						title="Explore" onclick="switch_view('explore')"> <img class="icon svg inactive" src="icon/explore.svg"/>
+						<img class="icon svg active" src="icon/explore-active.svg"/>
+					</button>
+					<button role="dm" class="nav icon" 
+						title="Direct Messages" onclick="switch_view('dm')">
+						<img class="icon svg inactive" src="icon/messages.svg"/>
+						<img class="icon svg active" src="icon/messages-active.svg"/>
+						<div class="new-notifications hide" role="dm"></div>
+					</button>
+					<button role="notifications" class="nav icon" 
+						title="Notifications" onclick="switch_view('notifications')">
+						<img class="icon svg inactive" src="icon/notifications.svg"/>
+						<img class="icon svg active" src="icon/notifications-active.svg"/>
+						<div class="new-notifications hide" role="activity"></div>
+					</button>
+					<button role="settings" title="Settings" class="nav icon"
+						onclick="switch_view('settings')">
+						<img class="icon svg inactive" src="icon/settings.svg"/>
+						<img class="icon svg active" src="icon/settings-active.svg"/>
+					</button>
+				</div>
+			</div>
+
+			<div id="view">
+				<div>
+					<header>
+						<label>Home</label>
+						<img class="pfp" role="their-pfp" data-pubkey=""
+							src="icon/no-user.svg"/>
+						<img class="pfp" role="my-pfp" data-pubkey=""
+							src="icon/no-user.svg"/>
+					</header>
+					<div id="newpost">
+						<textarea placeholder="What's up?" 
+						class="post-input" id="post-input"></textarea>
+						<div class="post-tools">
+							<input id="content-warning-input" class="cw hide" 
+							type="text" placeholder="Reason"/>
+							<button class="cw icon" role="toggle-cw"
+							title="Mark this message as sensitive.">
+								<img class="icon svg small" 
+								src="icon/content-warning.svg"/>
+							</button>
+							<button class="action" role="send" 
+							id="post-button" disabled>Send</button>
+						</div>
+					</div>
+					<div id="profile-info" role="profile-info" class="bottom-border hide">
+						<div class="flex">
+							<img role="profile-image" class="pfp jumbo"/>
+							<div class="profile-tools">
+								<button class="icon" role="message-user"
+								title="Directly Message">
+									<img class="icon svg" src="icon/message-user.svg"/>
+								</button>
+								<button class="icon hide" role="edit-profile"
+								title="Edit Profile">
+									<img class="icon svg" src="icon/edit-profile.svg"/></button>
+								<button class="icon" role="copy-pk"
+								data-pk="" title="Copy Public Key">
+									<img class="icon svg" src="icon/pubkey.svg"/></button>
+								<button class="action" role="follow-user" 
+								data-pk="">Follow</button>
+							</div>
+						</div>
+						<div>
+							<label role="profile-nip5"></label>
+							<p role="profile-desc"></p>
+						</div>
+					</div>
+					<div class="loading-events">
+						<div class="loader" title="Loading...">
+							<img class="dark-invert" src="icon/loader-fragment.svg"/>
+						</div>
+					</div>
+					<div id="show-new" class="show-new bottom-border hide">
+						<button onclick="show_new()">
+							Show New (<span role="count">0</span>)</button>
+					</div>
+					<div id="dms-not-available" class="hide">
+						DMs could not be decrypted due to lack of nip04 
+						integration. Please use an extension such as nos2x or 
+						Alby.
+					</div>
+					<div id="dms" class="hide">
+					</div>
+					<div id="timeline" class="events"></div>
+					<div id="settings" class="hide">
+						<section>
+							<header>
+								<label>Relays</label>
+								<button id="add-relay" class="btn-text">
+									<img class="svg icon small" src="icon/add-relay.svg"/>
+								</button>
+							</header>
+							<table id="relay-list" class="row">
+								<thead>
+									<tr>
+										<td>Address</td>
+										<td>Option</td>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</section>
+						<section>
+							<header><label>Miscellanious</label></header>
+							<div class="row">
+								<label>
+									Show Embeds From Everyone
+									<input type="checkbox" name="show_embeds"/>	
+								<label>
+							</div>
+							<div class="row">
+							<button class="action mr-some" role='about-nostr'>Read About Nostr</button>
+							<button class="action" role="sign-out">
+								Sign Out
+								<img class="icon svg small invert" src="icon/sign-out.svg"/>
+							</button>
+							</div>
+						</section>
+						<section>
+							<header><label>About</label></header>
+							<p>
+							Yo, Sup (Yo for short) was originally Damus Web
+							written by jb55@jb55.com. It was rewritten by 
+							tom@thomaswashere.com in order to bring it up to 
+							date.
+							</p>
+							<p>
+							Yo is open source under the AGPL-3 license. You can
+							find the source code <a 
+							href="https://git.sr.ht/~tomtom/damus">here</a>.
+							</p>
+							<p>
+							Bugs and feature requests can be emailed to <a
+							href="mailto:thomas.c.mathews@gmail.com">thomas.c.mathews@gmail.com</a>
+							or submitted to the <a
+							href="https://todo.sr.ht/~tomtom/damus-web-issues">
+							tracker</a>.
+							</p>
+						</section>
+					</div>
+				</div>
+			</div>
+			<div class="flex-fill vertical-hide"></div>
+		</div>
+		</div>
+
+		<div class="modal closed" id="media-preview">
+			<div class="media-container">
+				<img onclick="close_media_preview()" src=""/>
+			</div>
+			<!-- TODO add loader to media preview -->
+		</div>
+
+		<div class="modal closed" id="reply-modal">
+			<div id="reply-modal-content" class="modal-content">
+				<header>
+					<label>Reply To</label>
+					<button class="icon" onclick="close_modal(this)">
+						<img class="icon svg" src="icon/close-modal.svg"/>
+					</button>
+				</header>
+				<div id="replying-to"></div>
+				<div id="replybox">
+					<textarea id="reply-content" class="post-input"
+						placeholder="Reply..."></textarea>
+					<div class="post-tools">
+						<button id="reply-button" class="action">Reply</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="profile-editor" class="modal closed">
+			<div class="modal-content">
+				<header>
+					<label>Update Profile</label>
+					<button class="icon" onclick="close_modal(this)">
+						<img class="icon svg" src="icon/close-modal.svg"/>
+					</button>
+				</header>
+				<div>
+					<input type="text" class="block w100" name="name" placeholder="Name"/>
+					<input type="text" class="block w100" name="picture" placeholder="Picture URL"/>
+					<input type="text" class="block w100" name="nip05" placeholder="nip05"/>
+					<textarea name="about" class="block w100" placeholder="A bit about you."></textarea>
+					<button class="action float-right" onclick="click_update_profile()">
+						Update
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="event-details" class="modal closed">
+			<div class="modal-content">
+				<header>
+					<label>Event Details</label>
+					<button class="icon modal-floating-close-btn" onclick="close_modal(this)">
+						<img class="icon svg" src="icon/close-modal.svg"/>
+					</button>
+				</header>
+				<div>
+					<pre><code></code></pre>
+				</div>
+			</div>
+		</div>	
+
+		<div id="faqs" class="modal scrollable closed">
+			<button class="icon modal-floating-close-btn" onclick="close_modal(this)">
+				<img class="icon svg" src="icon/close-modal.svg"/>
+			</button>
+			<div class="page-content">
+			<h1>Welcome to Nostr</h1>
+			<p>The open social network for "literally" everyone.</p>
+
+			<h2>What is Nostr?</h2>
+			<p>
+			Nostr is a protocol, not a platform or an app. This means that
+			users can pick and choose which clients (apps) to use and which
+			relays (servers) they wish to connect to.
+			</p>
+			<p>Nostr uses encryption to validate content authors. This means
+			that there is no centralized account system. We use 
+			<a href="https://en.wikipedia.org/wiki/Public-key_cryptography"
+				target="_blank">public &amp; private</a> keys to sign our 
+			content when we post. Do not confuse this with blockchain
+			technology.
+			</p>
+			<p>
+			Nostr stands for "Notes and Other Stuff Transmitted by Relays".
+			</p>
+			<p>
+				Read more about the protocol <a
+				href="https://github.com/nostr-protocol/nostr"
+				target="_blank">here</a>.
+			</p>
+
+			<h2>Apps</h2>
+			<p>
+			You are using one right now! You just haven't signed in yet to see
+			the actual application. Close this modal to sign in with your key. 
+			</p>
+			<p>
+			A rich app ecosystem for Nostr. Anyone can build an app for the
+			protocol that fits their needs. This is the best option for users
+			as everyone has their own style. Another benifit is that you can
+			use multiple apps with the same account.
+			</p>
+			<p>
+			Since there are many apps for Nostr it allows developers to focus
+			on building certain experiences. Some apps may offer features that
+			others don't, such as direct messages, content viewing methods,
+			etc. You are allowed to choose how you want to interact with
+			Nostr.
+			</p>
+			<h3>Pick One</h3>
+			<p>
+			Here are a list of (trusted) apps that work with Nostr. Pick one
+			that fits you.
+			</p>
+			<ul>
+				<li><a href="https://damus.io" target="_blank">Damus</a> (iOS)</li>
+				<li><a href="https://github.com/fiatjaf/noscl" target="_blank">noscl</a> (Linux, Windows, MacOS)</li>
+			</ul>
+
+			<h3>Web Apps Warning</h3>
+			<p>
+			While the web is great for accessibility and is cross platform, it
+			is riddled with security implications you should be aware of. The
+			browser is susceptible to cross-site scripting (<a
+			href="https://en.wikipedia.org/wiki/Cross-site_scripting" 
+			target="_blank">XSS</a>) attacks and extension malware. Therefore 
+			you should be sure any web app you use is audited and trusted.
+			Additionally be aware of what apps you are using.
+			</p>
+			<p>
+			Secondly it is recommended you use a browser extension to handle
+			your Nostr key(s). This will delegate the signing process to an
+			extension that a XSS attack can't access. This is where native apps
+			have a stronger use case, but you should equally trust those as
+			well.
+			</p>
+
+			<h2>Relays</h2>
+			<p>
+			Relays are points of connection, a server. They allow you to read 
+			events (content) and write to it depending on it's configuration.
+			Some may be read only, others may require some sort of payment to 
+			use. Some may simply clone other relays. 
+			</p>
+			<p>
+			Relays allow for specific needs and niches. You can host your
+			own relay for your club or community (such as gaming, art, sciences,
+			etc.) Or you can build your own relay with your own logic that 
+			dictates who can access what and how. This is great for all kinds
+			of use cases for a range of users from individuals to businesses.
+			</p>
+
+			<h2>Account Creation</h2>
+			<p>You need to use a CLI tool. TODO fill this out.</p>
+
+			</div>
+		</div>
+	</body>
+</html>

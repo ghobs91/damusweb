@@ -1,0 +1,657 @@
+*:focus-visible {
+	/* Technically this is bad and something else should be done to indicate
+	 * that something is in focus.
+	 */
+	outline: none;
+}
+
+body {
+	background: var(--clrBg);
+	color: var(--clrText);
+	font-family: "Noto Sans", sans-serif;
+	font-size: var(--fsNormal);
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	color: var(--clrLink);
+}
+a:visited {
+	color: var(--clrLinkVisited);
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+thead {
+	font-weight: bold;
+}
+th, td {
+	padding: 5px 0;
+	font-size: var(--fsNormal);
+}
+
+.row { 
+	margin: 15px 0;
+}
+.mr-some {
+	margin-right: 15px;
+}
+.align-right {
+	text-align: right;
+}
+
+#gsticker {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 15px;
+}
+
+/* Welcome */
+
+#container-busy .loader {
+	height: 100vh;
+}
+.page-content {
+	max-width: 700px;
+	margin: 0 auto;
+	padding: 20px;
+}
+.hero-box {
+	width: 100vw;
+	height: 100vh;
+}
+.hero-box > .padded {
+	/* TODO rename .padded */
+	padding: 20px;
+	text-align: center;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.btn-text {
+  border: none;
+  font-size: var(--fsNormal);
+  color: var(--clrText);
+  background: transparent;
+  text-decoration: underline;
+}
+
+/* Navigation */
+#nav {
+	border-right: 1px solid var(--clrBorder);
+	padding: 10px;
+}
+#nav > div {
+	position: sticky;
+	top: 16px;
+	display: flex;
+	flex-flow: column;
+}
+#nav > div > * {
+	margin-bottom: 20px;
+	padding: 10px;
+	position: relative;
+}
+#nav > div[data-active] img.active {
+	display: none;
+}
+#nav > div[data-active="home"] [role="home"] img.inactive,
+#nav > div[data-active="explore"] [role="explore"] img.inactive,
+#nav > div[data-active="notifications"] [role="notifications"] img.inactive,
+#nav > div[data-active="settings"] [role="settings"] img.inactive,
+#nav > div[data-active="messages"] [role="dm"] img.inactive {
+	display: none;
+}
+#nav > div[data-active="home"] [role="home"] img.active,
+#nav > div[data-active="explore"] [role="explore"] img.active,
+#nav > div[data-active="notifications"] [role="notifications"] img.active,
+#nav > div[data-active="settings"] [role="settings"] img.active,
+#nav > div[data-active="messages"] [role="dm"] img.active {
+	display: block;
+}
+#app-icon-logo > img {
+	width: 36px;
+	height: 36px;
+}
+button.nav > img.icon {
+	width: 28px;
+	height: 28px;
+}
+#gnav {
+	display: none;
+	position: fixed;
+	bottom: 55px;
+	right: 55px;
+	z-index: var(--zGlobal);
+}
+#gnav button {
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-size: 24px;
+	border-radius: 50%;
+	background: var(--clrText);
+	color: var(--clrBg);	
+	padding: 10px;
+	border: transparent 5px solid;
+	transition: top 0.05s linear;
+	transform: translateX(-50%) translateY(-50%);
+	z-index: calc(var(--zGlobal) - 1);
+}
+#gnav button > .icon {
+	width: 28px;
+	height: 28px;
+}
+#gnav button[role="open-gnav"] {
+	z-index: var(--zGlobal);
+	padding: 15px;
+}
+#gnav.open button[role="home"] {
+	top: -375px;
+}
+#gnav.open button[role="explore"] {
+	top: -300px;
+}
+#gnav.open button[role="dm"] {
+	top: -225px;
+}
+#gnav.open button[role="notifications"] {
+	top: -150px;
+}
+#gnav.open button[role="notifications"] .new-notifications {
+	right: 9px;
+}
+#gnav.open button[role="settings"] {
+	top: -75px;
+}
+
+.new-notifications {
+	position: absolute;
+	top: 10px;
+	right: 13px;
+	border-radius: 13px;
+	background: var(--clrNotification);
+	color: white;
+	font-weight: 800;
+	width: 5px;
+	height: 5px;
+}
+
+/* Application Framework */
+#container {
+	display: flex;
+	flex-flow: row;
+}
+#view {
+	flex-shrink: 0;
+	border-right: 1px solid var(--clrBorder);
+	width: 750px;
+	min-height: 100vh;
+}
+#view > div > header {
+	position: sticky;
+	top: 0;
+	z-index: var(--zHeader);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+}
+#view > div > header > label {
+	padding: 15px;
+	font-size: 22px;
+	font-weight: 800;
+	display: block;
+}
+#view > div > header > .pfp {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	top: 15px;
+	right: 15px;
+}
+
+/* Events & Content */
+.events {
+	display: flex;
+	flex-direction: column;
+}
+.events.reverse {
+	flex-direction: column-reverse;
+}
+.event {
+	display: flex;
+	flex-direction: row;
+	padding: 15px;
+	transition: background-color 0.2s linear;
+}
+.event:hover {
+	background-color: var(--clrPanel);
+}
+.loading-events {
+	text-align: center;
+	padding: 15px;
+}
+.loader {
+	width: 28px;
+	height: 28px;
+	display: block;
+	margin: 0 auto;
+	position: relative;
+}
+.loader img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	animation: spin 1s linear infinite;
+}
+@keyframes spin { 
+    100% { 
+        transform: rotate(360deg); 
+    } 
+}
+.show-new {
+	text-align: center;
+}
+.show-new > button {
+	color: var(--clrText);
+	border: none;
+	padding: 15px;
+	background: transparent;
+	width: 100%;
+	font-size: var(--fsNormal);
+	font-weight: bold;
+}
+.userpic { /* TODO remove .userpic and use helper class */
+	flex-shrink: 1;
+}
+.pfp {
+	width: 64px;
+	height: 64px;
+	position: relative;
+	border-radius: 50%;
+	z-index: var(--zPFP);
+	object-fit: cover;
+}
+
+.event-content {
+	flex: 1;
+	padding-left: 15px;
+}
+.event-content > .info {
+	display: inline-block;
+}
+.event-content > .info button[role="view-event"] {
+	margin-left: 10px;
+}
+.username, .thread-id {
+	font-weight: 800;
+	font-size: var(--fsReduced);
+	word-break: break-word;
+}
+.chatroom-name {
+	font-weight: bold;
+}
+.deleted-comment {
+	margin-top: 10px;
+}
+.line-bot {
+	width: 3px;
+	height: 100%;
+	position: relative;
+	top: -7px;
+	left: calc(50% - 1px);
+	background-color: var(--clrBorder);
+}
+.quote {
+  margin-left: 10px;
+  padding: 10px;
+  display: block;
+}
+
+#replying-to {
+	max-height: 200px;
+	overflow-y: scroll;
+}
+
+#replybox {
+	margin-top: 10px;
+	border-top: 1px solid var(--clrBorder);
+}
+
+.timestamp, .replying-to, .shared-by {
+	font-size: var(--fsSmall);
+	color: var(--clrTextLight);
+}
+.comment {
+	word-break: break-word;
+}
+
+.inline-img {
+	width: 100%;
+	max-height: 300px;
+	object-fit: contain;
+}
+
+.action-bar > button {
+	margin-right: 25px;
+	opacity: 0.5;
+}
+.reactions {
+	margin-bottom: 15px;
+}
+
+.reaction-group {
+	display: inline-flex;
+	align-items: center;
+	border: 2px solid var(--clrBorder);
+	padding: 4px;
+	border-radius: 5px;
+}
+
+.reaction-group img {
+	width: 18px;
+	height: 18px;
+	object-fit: cover;
+	border-radius: 50%;
+	margin-left: -8px;
+	vertical-align: top;
+}
+
+.reaction-group img:first-of-type {
+	margin-left: 0px;
+}
+
+.reaction-emoji {
+	margin-right: 4px;
+}
+
+.action-bar button.icon {
+	transition:	opacity 0.3s linear;
+}
+.action-bar button.icon:hover {
+	opacity: 1;
+}
+.action-bar button.heart.liked {
+	opacity: 1;
+}
+
+details.cw summary {
+	cursor: pointer;
+	outline: none;
+	margin-bottom: 10px;
+}
+
+/* Modal */
+.modal {
+	position: fixed;
+	z-index: var(--zModal); 
+	left: 0;
+	top: 0;
+	width: 100%; 
+	height: 100%;
+	background: rgba(255,255,255,0.4);
+	opacity: 1;
+	transition: opacity 0.2s linear;
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+}
+.modal.scrollable {
+	overflow-y: auto;
+}
+.modal.closed {
+	opacity: 0;
+	pointer-events: none;
+}
+.modal-content {
+	padding: 20px;
+	overflow: auto;
+	border-radius: 15px;
+	background: var(--clrPanel);
+	max-width: 700px;
+	margin: 0 auto;
+	margin-top: 35px;
+}
+.modal header {
+	display: flex;
+}
+.modal header label {
+	font-weight: 800;
+	font-size: var(--fsEnlarged);
+	flex: 1;
+	word-break: break-word;
+}
+.modal header button {
+	font-size: 24px;
+}
+.modal .modal-floating-close-btn {
+	position: sticky;
+	top: 20px;
+	left: 20px;
+}
+
+/* Post & Reply */
+#newpost {
+	padding: 0px 15px 15px;
+	border-bottom: solid 1px var(--clrBorder);
+}
+textarea.post-input {
+	display: block;
+	width: 100%;
+}
+
+.post-tools {
+	text-align: right;
+}
+.post-tools > button.icon {
+	margin-right: 10px;
+	opacity: 0.5;
+}
+.post-tools > button.icon.cw.active {
+	opacity: 1.0;
+}
+input[type="text"].cw {
+	border: none;
+	border-bottom: solid 2px var(--clrWarn);
+	font-size: var(--fsReduced);
+	background: transparent;
+	color: var(--clrText);
+	padding: 5px;
+}
+
+/* Profile */
+
+.pfp.jumbo {
+	width: 128px;
+	height: 128px;
+}
+[role="profile-info"] {
+	padding: 15px;
+	padding-top: 0;
+}
+.profile-tools {
+	flex: 1;
+	text-align: right;
+}
+.profile-tools > button {
+	vertical-align: middle;
+}
+.profile-tools > button.icon {
+	margin-right: 20px;
+}
+p[role="profile-desc"] {
+	margin-bottom: 0;
+}
+label[role="profile-nip5"] {
+	margin-top: 15px;
+	font-weight: 800;
+	display: block;
+}
+
+/* Media Preview */
+
+.modal .media-container {
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+.modal .media-container > img {
+	object-fit: scale-down;
+	object-position: center;
+	width: 100%;
+	height: 100%;
+}
+
+/* Profile Editor */
+
+#profile-editor header {
+	margin-bottom: 15px;
+}
+#profile-editor textarea {
+	margin: 15px 0;
+}
+
+/* Event Preview */
+
+#event-details .modal-content > div {
+	overflow: scroll;
+}
+code {
+	tab-size: 4;
+}
+
+/* Settings */
+
+#settings section {
+	margin: 15px;
+}
+#settings header > label {
+	font-weight: bold;
+	font-size: var(--fsEnlarged);
+}
+
+/* Messaging */
+
+#dms-not-available {
+    background: #ffd559;
+    display: inline-block;
+    color: #090909;
+    padding: 15px;
+}
+.dm-group {
+	display: flex;
+	padding: 15px;
+}
+.dm-group .content {
+	position: relative;
+	padding: 0 15px;
+	flex: 1;
+}
+.dm-group .message {
+	word-break: break-word;	
+}
+.dm-group .time {
+	font-size: var(--fsReduced);
+	color: var(--clrTextLight);
+}
+.dm-group .count {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: var(--clrBorder);
+	border-radius: 20px;
+	padding: 1px 8px;
+	font-size: var(--fsSmall);
+}
+.dm-group .count.active {
+	background: var(--clrChatBlue);
+	font-weight: bold;
+	color: white;
+}
+.event.dm {
+	padding-bottom: 0;
+}
+.event.dm:hover { 
+	background: transparent;
+}
+.event.dm:last-child {
+	padding-bottom: 15px;
+}
+.event.dm .wrap{
+	border-radius: 20px;
+	background: var(--clrPanel);
+	padding: 10px;
+}
+.event.dm.mine .wrap {
+	background: var(--clrChatBlue);
+	margin-left: auto;
+}
+.event.dm.mine .timestamp {
+	color: white;
+	display: block;
+	text-align: right;
+}
+.event.dm .body p {
+	display: inline-block;
+	margin: 0;
+}
+.event.dm .timestamp {
+	display: block;
+	margin: 0;
+}
+.event.dm .reactions {
+	margin: 0;
+}
+.event.dm .body {
+	word-break: break-word;
+}
+
+/* Inputs */
+
+.block {
+	display: block;
+}
+.w100 {
+	width: 100%;
+}
+
+/* Prevent events from inside button sub elements */
+button > * {
+	pointer-events: none;
+}
+
+input[type="text"] {
+	background: transparent;
+	border: none;
+	color: var(--clrText);
+	font-size: var(--fsNormal);
+	padding: 15px;
+	border-bottom: 3px var(--clrText) solid;
+	box-sizing: border-box;
+}
+textarea {
+	border: none;
+	background: transparent;
+	color: var(--clrText);
+	font-size: var(--fsEnlarged);
+	font-family: var(--ffDefault);
+	margin: 10px 0;
+	padding: 0;
+	box-sizing: border-box;
+	resize: vertical;
+}
+
+@media (prefers-color-scheme: dark) {
+	.icon.svg {
+		filter: invert(1);
+	}
+	.icon.svg.dark-noinvert {
+		filter: invert(0);
+	}
+	.modal {
+		background: rgba(0,0,0,0.4);
+	}
+}
+
